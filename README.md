@@ -1,78 +1,241 @@
-# Exterview E2E Automation
+🎯 End-to-End Automation Framework – Interview Workflow
+📌 Overview
 
-**Tech Stack**
-- Playwright (TypeScript)
-- Page Object Model
-- End-to-End UI Automation
+This project implements an End-to-End UI Automation Framework using Playwright with TypeScript, following the Page Object Model (POM) design pattern.
 
-**Test Covered**
-- Login with OTP
-- Job Creation
-- Candidate Upload
-- Interview Link Generation
-- AI Interview Completion
-- Interview Report Validation
+The automation suite validates the complete interview workflow — from login to AI interview report validation — simulating a real-world recruiter and candidate journey.
 
-**How to run testcases**
+The framework is designed with:
 
-Install dependencies:
+Maintainability
+
+Stability
+
+Readability
+
+Real-world automation best practices
+
+🛠 Tech Stack
+
+Framework: Playwright
+
+Language: TypeScript
+
+Design Pattern: Page Object Model (POM)
+
+Test Type: End-to-End UI Automation
+
+Execution Mode: Headed / Headless
+
+🧪 Test Coverage
+
+The following business workflow is automated:
+
+Login with OTP
+
+Job Creation
+
+Candidate Upload (Resume Upload)
+
+Interview Link Generation
+
+AI Interview Completion
+
+Interview Report Validation
+
+The automation simulates a full recruiter-to-candidate interview lifecycle.
+
+📂 Project Structure
+project-root/
+│
+├── tests/
+│   └── E2e_workflows.spec.ts
+│
+├── pages/
+│   ├── LoginPage.ts
+│   ├── JobPage.ts
+│   ├── CandidatePage.ts
+│   └── InterviewPage.ts
+│
+├── playwright.config.ts
+├── package.json
+└── README.md
+
+Structure Highlights
+
+tests/ → Contains test specifications.
+
+pages/ → Contains Page Object classes encapsulating UI interactions.
+
+playwright.config.ts → Centralized test configuration.
+
+Follows clean separation of test logic and UI locators.
+
+▶️ How to Run the Tests
+1️⃣ Install Dependencies
 npm install
 npx playwright install
 
-Run test:
+2️⃣ Execute Test (Headed Mode)
 npx playwright test tests/E2e_workflows.spec.ts --headed
 
+Optional: Run in Headless Mode
+npx playwright test tests/E2e_workflows.spec.ts
 
-**Assumptions**
+🧠 Test Design Approach
 
-**> I initially automated OTP retrieval via Yopmail. However, frequent test executions triggered CAPTCHA protection. To maintain test stability and avoid external dependency, I switched to a static OTP strategy for automation purposes.**
+This framework follows modern automation best practices:
 
-> Camera and microphone permissions are granted via Playwright browser context.
+✔ Page Object Model for maintainability
 
-> Clipboard access is enabled to capture the interview link.
+✔ Role-based selectors (getByRole) to reduce locator flakiness
 
-> Candidate name (Eppili Satish) is assumed to appear after resume upload.
+✔ Assertion-driven synchronization (expect().toBeEnabled())
 
-**Limitations**
+✔ Minimal usage of static waits
 
-> CAPTCHA handling is not automated (manual bypass required). 
+✔ Browser context permission handling
 
-> Image capture step uses file upload simulation instead of real webcam capture.
+✔ UI-level validation of business workflow
 
-> Test assumes stable UI locators (text-based selectors).
+The test flow is designed to closely replicate real user behavior.
 
-> No backend API validation is implemented (UI-level validation only).
+🔐 Assumptions
 
-**Challenges Faced & Solutions**
+Static OTP Strategy:
+Initially, OTP retrieval was automated using Yopmail. However, repeated test executions triggered CAPTCHA protection.
+To ensure test stability and remove third-party dependency, a controlled static OTP mechanism was implemented.
 
+Browser Permissions:
+The Playwright browser context is configured with:
+
+camera
+
+microphone
+
+clipboard-read
+
+clipboard-write
+
+Resume Upload Behavior:
+Candidate name "Eppili Satish" is assumed to appear after resume upload.
+
+Interview Link Retrieval:
+Clipboard access is enabled to capture and reuse the generated interview link.
+
+🚫 Known Limitations
+
+CAPTCHA handling is not automated (manual bypass required).
+
+Static OTP is used instead of dynamic OTP retrieval.
+
+Image capture step is simulated via file upload (not real webcam capture).
+
+No backend API validation (UI validation only).
+
+Test relies on stable UI locators (text-based selectors).
+
+Network interception or API stubbing is not implemented.
+
+⚠ Challenges Faced & Solutions
 1️⃣ Strict Mode Locator Conflicts
 
-Issue: Multiple elements with same text (Add Candidates, resume).
-Solution: Used getByRole() with exact: true and scoped locators to avoid ambiguity.
+Issue:
+Multiple elements had identical text (e.g., "Add Candidates", "Resume").
+
+Solution:
+
+Used getByRole() with { exact: true }
+
+Applied scoped locators within specific containers
+
+Avoided ambiguous text-based selectors
 
 2️⃣ Wizard Navigation Instability
 
-Issue: Continue button not enabled immediately.
-Solution: Added expect(button).toBeEnabled() before clicking to prevent flakiness.
+Issue:
+The "Continue" button was not immediately enabled, causing flaky failures.
+
+Solution:
+Implemented assertion-based synchronization:
+
+await expect(continueButton).toBeEnabled();
+await continueButton.click();
+
+
+This ensures stable navigation without unnecessary waits.
 
 3️⃣ Clipboard Permission Issue
 
-Issue: Unable to read interview link from clipboard.
-Solution: Created browser context with:
+Issue:
+Unable to read the generated interview link from clipboard.
+
+Solution:
+Configured browser context with required permissions:
 
 permissions: ['clipboard-read', 'clipboard-write']
 
-4️⃣ Camera & Microphone Permission
+4️⃣ Camera & Microphone Permission Issue
 
-Issue: Interview page required camera access.
-Solution: Added browser context permissions:
+Issue:
+The interview page required camera and microphone access, blocking execution.
 
-permissions: ['camera', 'microphone'],
+Solution:
+Configured browser context permissions:
 
-The inteview was unable to open both manual as well as automation
+permissions: ['camera', 'microphone']
 
 5️⃣ Page Closing During Interview
 
-Issue: Target page has been closed during image upload.
-Solution: Added proper waits and ensured navigation completed before interacting. Where possible, dynamic assertions were used. Static waits were applied only in scenarios where application behavior is asynchronous and does not expose deterministic UI state changes. In a production environment, this would ideally be replaced with API interception or network-based wait strategies.
+Issue:
+Target page was closing unexpectedly during image upload.
 
+Solution:
+
+Added proper navigation waits
+
+Ensured page stability before interaction
+
+Replaced unnecessary static waits with dynamic assertions
+
+Used static waits only when the application lacked deterministic UI signals
+
+In a production-ready environment, this would ideally be replaced with:
+
+API interception
+
+Network-based wait strategies
+
+Event-driven synchronization
+
+🔄 Future Improvements
+
+Implement API-level validation using Playwright request context
+
+Replace static OTP with mock/stubbed authentication
+
+Integrate test reporting (HTML Reporter enhancements)
+
+Add CI/CD pipeline integration
+
+Introduce test data management strategy
+
+Use data-testid attributes for more stable locators
+
+🏁 Conclusion
+
+This framework demonstrates:
+
+Real-world E2E automation capability
+
+Playwright proficiency
+
+Synchronization strategy understanding
+
+Permission handling expertise
+
+Debugging and flakiness mitigation skills
+
+Clean architecture using Page Object Model
+
+The implementation focuses on reliability, clarity, and production-grade automation design principles.
