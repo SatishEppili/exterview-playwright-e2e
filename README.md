@@ -1,4 +1,4 @@
-E2E Automation – Interview Workflow
+**E2E Automation – Interview Workflow**
 
 This project contains an End-to-End UI automation suite built using Playwright with TypeScript.
 
@@ -6,7 +6,7 @@ It automates the complete interview lifecycle — from login to interview report
 
 The framework follows the Page Object Model (POM) to keep the test structure clean, reusable, and maintainable.
 
-Tech Stack
+**Tech Stack**
 
 Playwright
 
@@ -16,7 +16,7 @@ Page Object Model (POM)
 
 UI-based End-to-End Testing
 
-Test Coverage
+**Test Coverage**
 
 The following workflow is automated:
 
@@ -34,7 +34,7 @@ Validate Interview Report
 
 The test simulates a real-world end-to-end scenario covering the full interview process.
 
-Project Structure
+**Project Structure**
 
 tests/
 
@@ -56,9 +56,9 @@ Handles browser configuration and permissions
 
 package.json
 
-Project dependencies and scripts
+**Project dependencies and scripts**
 
-How to Run the Tests
+**How to Run the Tests**
 Install Dependencies
 
 npm install
@@ -73,7 +73,7 @@ Run in Headless Mode
 
 npx playwright test tests/E2e_workflows.spec.ts
 
-Assumptions
+**Assumptions**
 
 OTP retrieval was initially automated using Yopmail.
 
@@ -87,7 +87,7 @@ Clipboard permissions are enabled to capture and reuse the interview link.
 
 Candidate name “Eppili Satish” is expected to appear after resume upload.
 
-Limitations
+**Limitations**
 
 CAPTCHA handling is not automated (manual bypass required).
 
@@ -101,7 +101,7 @@ No backend or API validation implemented.
 
 Test depends on stable text-based locators.
 
-Challenges Faced & Solutions
+**Challenges Faced & Solutions**
 1. Strict Mode Locator Conflicts
 
 Issue: Multiple elements had similar text (e.g., “Add Candidates”, “Resume”).
@@ -162,7 +162,7 @@ Added dynamic assertions.
 
 Used static waits only where no deterministic UI signal was available.
 
-Final Notes
+**Final Note**
 
 Practical handling of browser permissions
 
@@ -173,3 +173,4 @@ Flakiness reduction techniques
 Clean structure using Page Object Model
 
 The focus was on stability, readability, and maintaining realistic user flow throughout the automation process.
+
