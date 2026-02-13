@@ -1,7 +1,8 @@
 E2E Automation – Interview Workflow
 
 This project contains an End-to-End UI automation suite built using Playwright with TypeScript.
-It automates the complete interview lifecycle — from login to interview report validation.
+
+It automates the complete interview lifecycle — from login to interview report validation — simulating a real recruiter and candidate workflow.
 
 The framework follows the Page Object Model (POM) to keep the test structure clean, reusable, and maintainable.
 
@@ -31,116 +32,144 @@ Complete AI Interview
 
 Validate Interview Report
 
-The goal was to simulate a realistic recruiter-to-candidate flow and validate the entire process through UI automation.
+The test simulates a real-world end-to-end scenario covering the full interview process.
 
 Project Structure
-├── tests/
-│   └── E2e_workflows.spec.ts
-│
-├── pages/
-│   ├── LoginPage.ts
-│   ├── JobPage.ts
-│   ├── CandidatePage.ts
-│   └── InterviewPage.ts
-│
-├── playwright.config.ts
-└── package.json
 
+tests/
 
-tests/ contains the test specification.
+Contains the main test file: E2e_workflows.spec.ts
 
-pages/ contains Page Object classes with reusable actions and locators.
+pages/
 
-playwright.config.ts manages browser configuration and permissions.
+LoginPage.ts
+
+JobPage.ts
+
+CandidatePage.ts
+
+InterviewPage.ts
+
+playwright.config.ts
+
+Handles browser configuration and permissions
+
+package.json
+
+Project dependencies and scripts
 
 How to Run the Tests
-
-Install dependencies:
+Install Dependencies
 
 npm install
+
 npx playwright install
 
-
-Run the test:
+Run the Test (Headed Mode)
 
 npx playwright test tests/E2e_workflows.spec.ts --headed
 
+Run in Headless Mode
 
-You can remove --headed to run in headless mode.
+npx playwright test tests/E2e_workflows.spec.ts
 
 Assumptions
 
-OTP retrieval was initially automated using Yopmail. However, frequent executions triggered CAPTCHA protection.
-To avoid external dependency and instability, a static OTP approach was used for automation.
+OTP retrieval was initially automated using Yopmail.
+
+Repeated executions triggered CAPTCHA protection.
+
+To maintain stability and avoid external dependency, a static OTP strategy was used.
 
 Camera and microphone permissions are granted via Playwright browser context.
 
-Clipboard permissions are enabled to capture and reuse the generated interview link.
+Clipboard permissions are enabled to capture and reuse the interview link.
 
-The candidate name “Eppili Satish” is expected to appear after resume upload.
+Candidate name “Eppili Satish” is expected to appear after resume upload.
 
 Limitations
 
-CAPTCHA handling is not automated (manual intervention required).
+CAPTCHA handling is not automated (manual bypass required).
 
 OTP is static (not dynamically fetched).
 
-Webcam capture is simulated using file upload.
+Webcam capture is simulated via file upload.
 
-Validation is UI-level only (no backend/API verification).
+Validation is performed at UI level only.
 
-Tests rely on stable UI locators (text-based selectors).
+No backend or API validation implemented.
+
+Test depends on stable text-based locators.
 
 Challenges Faced & Solutions
 1. Strict Mode Locator Conflicts
 
 Issue: Multiple elements had similar text (e.g., “Add Candidates”, “Resume”).
-Solution: Used scoped locators and getByRole() with exact: true to avoid ambiguity.
+
+Solution:
+
+Used getByRole() with exact: true.
+
+Scoped locators within specific containers to avoid ambiguity.
 
 2. Wizard Navigation Instability
 
-Issue: “Continue” button was not immediately enabled, causing flaky failures.
-Solution: Added assertion-based waits:
+Issue: “Continue” button was not immediately enabled.
+
+Solution:
+
+Added assertion-based waits before clicking.
+
+Example:
 
 await expect(button).toBeEnabled();
 
-
-This reduced flakiness significantly.
-
 3. Clipboard Permission Issue
 
-Issue: Unable to read the interview link from clipboard.
-Solution: Configured browser context with:
+Issue: Unable to read the generated interview link.
 
-permissions: ['clipboard-read', 'clipboard-write']
+Solution:
+
+Configured browser context with:
+
+clipboard-read
+
+clipboard-write
 
 4. Camera & Microphone Access
 
-Issue: Interview page required camera and microphone permissions.
-Solution: Granted required permissions in Playwright browser context:
+Issue: Interview page required media permissions.
 
-permissions: ['camera', 'microphone']
+Solution:
+
+Granted:
+
+camera
+
+microphone
+
+Configured in Playwright browser context.
 
 5. Page Closing During Interview
 
 Issue: Target page closed unexpectedly during image upload.
-Solution: Added proper navigation handling and dynamic assertions.
-Static waits were used only where the application did not expose reliable UI state changes.
 
-In a production scenario, this would ideally be handled via API interception or network-based synchronization.
+Solution:
+
+Ensured navigation completed before interaction.
+
+Added dynamic assertions.
+
+Used static waits only where no deterministic UI signal was available.
 
 Final Notes
 
-This project focuses on:
-
-Stability over shortcuts
-
-Clean test structure
-
-Realistic user simulation
-
 Practical handling of browser permissions
 
-Reducing flakiness using assertion-based waits
+Assertion-based synchronization strategy
 
-The implementation reflects real-world E2E automation challenges and solutions.
+Flakiness reduction techniques
+
+Clean structure using Page Object Model
+
+The focus was on stability, readability, and maintaining realistic user flow throughout the automation process.
