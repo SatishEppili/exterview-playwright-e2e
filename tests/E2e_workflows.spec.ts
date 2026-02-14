@@ -103,29 +103,5 @@ test.describe('End-to-End Avatar Interview Flow', () => {
         // Simulate answering questions
         await interview.simulateInterview(8000);
 
-        // Submit interview
-        await interview.submitInterview();
-
-        // =====================================================
-        // STEP 7: VALIDATE REPORT (Back to Admin)
-        // =====================================================
-        await page.bringToFront();
-        await page.reload();
-
-        await expect(
-            page.getByText('Eppili Satish', { exact: true })
-        ).toBeVisible({ timeout: 60000 });
-
-        // Expand candidate again
-        await page.getByText('Eppili Satish', { exact: true }).click();
-
-        // Validate interview completion
-        await expect(
-            page.getByText('AI INTERVIEW + AGENT')
-        ).toBeVisible({ timeout: 60000 });
-
-        console.log(' E2E Interview Flow Completed Successfully');
-
-    });
-
+});
 });

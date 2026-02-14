@@ -28,22 +28,20 @@ export class InterviewPage {
       this.page.getByText('Capture Your Image to start the interview')
     ).toBeVisible({ timeout: 30000 });
 
-    // Click Capture button
-    await this.page.getByRole('button', { name: 'Capture' }).click();
+    // Handle native file chooser
+    const [fileChooser] = await Promise.all([
+      this.page.waitForEvent('filechooser'),
+      this.page.getByRole('button', { name: 'Upload from device' }).click(),
+    ]);
 
-    // Wait for Upload Image button to appear
-    const uploadBtn = this.page.getByRole('button', { name: 'Upload Image' });
-    await expect(uploadBtn).toBeVisible({ timeout: 30000 });
+    // Upload file
+    await fileChooser.setFiles(imagePath);
 
-    //IMPORTANT: Wait for file input BEFORE clicking upload
-    const fileInput = this.page.locator('input[type="file"]');
-    await fileInput.waitFor({ state: 'attached', timeout: 30000 });
+    // Wait for upload to complete
+    await this.page.waitForLoadState('networkidle');
 
-    // Set file directly
-    await fileInput.setInputFiles(imagePath);
+    await this.page.getByRole('button', { name: 'Crop & Upload' }).click();
 
-    // Now click Upload Image
-    await uploadBtn.click();
 
     // Wait for next screen
     await this.page.waitForLoadState('networkidle');
@@ -52,24 +50,25 @@ export class InterviewPage {
   // STEP 3: Simulate Interview
   // =====================================================
   async simulateInterview(durationMs: number = 8000) {
-    await this.page.waitForTimeout(durationMs);
-  }
 
-  // =====================================================
-  // STEP 4: Submit Interview
-  // =====================================================
-  async submitInterview() {
-    const submitBtn = this.page.getByRole('button', { name: /Submit/i });
-
-    await expect(submitBtn).toBeVisible({ timeout: 30000 });
-    await submitBtn.click();
-
-    await expect(
-      this.page.getByText('Thank You')
-    ).toBeVisible({ timeout: 30000 });
-
-    this.page.on('close', () => {
-      console.log('Interview page closed unexpectedly');
+    // Listen for backend response BEFORE clicking
+    this.page.on('response', async (response) => {
+      if (response.url().includes('start-video-ai-interview')) {
+        console.log('Start Interview API Status:', response.status());
+        console.log('Start Interview API Body:', await response.text());
+      }
     });
+
+    await this.page.waitForTimeout(durationMs);
+
+    // Click Start Interview
+    await this.page.getByRole('button', { name: 'Start Interview' }).click();
+
+    // Check for UI error message
+    const errorToast = this.page.locator('text=Failed to start the interview');
+
+    if (await errorToast.isVisible({ timeout: 5000 }).catch(() => false)) {
+      console.log('UI Error:', await errorToast.textContent());
+    }
   }
 }

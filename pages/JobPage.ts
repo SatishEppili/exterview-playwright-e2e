@@ -8,10 +8,7 @@ export class JobPage {
     // Step 0: Select AI & Human Interview
     // ===============================
     async selectAIHumanInterview() {
-        await this.page
-            .getByText('AI & Human Interview', { exact: false })
-            .click();
-
+        await this.page.getByText('AI & Human Interview', { exact: false }).click();
         const continueBtn = this.page.getByRole('button', { name: 'Continue' });
         await expect(continueBtn).toBeEnabled();
         await continueBtn.click();

@@ -4,7 +4,7 @@ export async function fetchOtp(context: BrowserContext, email: string) {
   const page = await context.newPage();
   const username = email.split('@')[0];
 
-  // ✅ Correct direct login URL
+  // Correct direct login URL
   await page.goto(`https://yopmail.com/en/?login=${username}`);
 
   // Wait for inbox frame
